@@ -181,13 +181,14 @@ let footerOffset = $('footer').offsetTop //- ($(window).height() / 1)
 
 window.addEventListener('scroll', () => {
   const wScroll = window.scrollY
-  nav.classList.toggle('alone', wScroll > introHeight)
+  nav.classList.toggle('alone', wScroll > introHeight);
   [ // LANDING ELEMENTS
     [projectsOffset,    '#projects .section__title'],
     [teamOffset,        '#team .section__title'],
     [aboutOffset * 1.2, '#about .section__title'],
     [aboutOffset,       '#about .section__image']
   ].forEach(([offset, query]) => { if (wScroll > offset) $(query).classList.add('is-showing'); });
+  // use $(query).classList.toggle('is-showing', wScroll > offset); if you want to get the effects if scrolled from the top again
 })
 
 // ONLOAD ANIMATION --------------------
