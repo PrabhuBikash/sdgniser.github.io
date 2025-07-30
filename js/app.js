@@ -236,7 +236,7 @@ $('nav ul li').onclick = () => {
   if (!nav.classList.includes('small-open')) return;
   [$('.logo-2'), $id('nav-close')].forEach(hide)
   switchClass(nav, 'small-open', 'small')
-  fadeOut($('nav ul'))
+  await fadeOut($('nav ul'))
 };
 
 window.onresize = checkNav;
