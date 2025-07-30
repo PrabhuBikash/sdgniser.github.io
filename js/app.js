@@ -18,16 +18,20 @@ const getHTML = (path, onSuccess, onError) => fetchAdv(
 );
 //EFFECTS
 function fadeOut(el, duration = 400) {
-  el.style.transition = `opacity ${duration}ms`;
-  el.style.opacity = 1;
-  requestAnimationFrame(() => el.style.opacity = 0);
-  setTimeout(() => el.style.display = 'none', duration);
+  return new Promise(resolve => {
+    el.style.transition = `opacity ${duration}ms ease`;
+    el.style.opacity = 0;
+    setTimeout(() => resolve(el.style.display = 'none'), duration);
+  });
 }
 function fadeIn(el, duration = 400, display = 'block') {
-  el.style.opacity = 0;
-  el.style.display = display;
-  el.style.transition = `opacity ${duration}ms`;
-  requestAnimationFrame(() => el.style.opacity = 1);
+  return new Promise(resolve => {
+    el.style.display = display;
+    el.style.opacity = 0;
+    el.style.transition = `opacity ${duration}ms ease`;
+    requestAnimationFrame(() => el.style.opacity = 1);
+    setTimeout(() => resolve(), duration);
+  });
 }
 function hide(el) { el.style.display = 'none'; }
 function switchClass(el, prevClass, newClass) {
@@ -208,9 +212,9 @@ window.onload = () => {
 
 
 // TEAM SECTION SWITCH FUNCTIONALITY --------------------
-function switchTeam(prevteam, newTeam) {
-  fadeOut($(`.team-${prevteam}`))
-  fadeIn($(`.team-${newTeam}`), 400, "flex")
+async function switchTeam(prevteam, newTeam) {
+  await fadeOut($(`.team-${prevteam}`))
+  await fadeIn($(`.team-${newTeam}`), 400, "flex")
   $(`.team-switch-${newTeam}`).classList.add('active')
   $(`.team-switch-${prevteam}`).classList.remove('active')
 }
@@ -219,13 +223,13 @@ $('.team-switch-alumni').onclick = () => switchTeam("current", "alumni")
 
 // MOBILE NAVIGATION BAR --------------------
 $id('nav-close').onclick = () => {
-  [$('.logo-2'), $('nav ul'), $id('nav-close')].forEach(hide);
-  switchClass(nav, 'small-open', 'small')
+  Promise.all([ $('.logo-2'), $('nav ul'), $id('nav-close') ].map(fadeOut))
+  .then(() => switchClass(nav, 'small-open', 'small'));
 }
 
 $id('nav-open').onclick = () => {
-  [$('.logo-2'), $('nav ul'), $id('nav-close')].forEach(fadeIn)
-  switchClass(nav, 'small', 'small-open')
+  switchClass(nav, 'small', 'small-open');
+  Promise.all([ fadeIn($('.logo-2')), fadeIn($('nav ul'), 400, 'flex'), fadeIn($id('nav-close'), 400, 'inline') ]);
 }
 
 $('nav ul li').onclick = () => {
